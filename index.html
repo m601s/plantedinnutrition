@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Weight & Fat Loss: 101</title>
+  <meta name="description" content="Planted in Nutrition — Weight & Fat Loss: 101 by Julie Wallace, RDN, LD." />
+  <style>
+    :root{--bg:#0b0f14;--panel:#111826;--panel-2:#0f1724;--text:#e6edf3;--muted:#a7b0bd;--brand:#22d3ee;--ok:#22c55e;--danger:#ef4444;--link:#7dd3fc;--border:#223047;--shadow:0 10px 30px rgba(0,0,0,.35);--radius:14px}
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
+    a{color:var(--link);text-decoration:none} a:hover{text-decoration:underline}
+    .app{display:grid;grid-template-columns:320px 1fr;gap:22px;min-height:100vh}
+    @media (max-width:940px){.app{grid-template-columns:1fr}.sidebar{position:sticky;top:0;z-index:5}}
+    .sidebar{background:linear-gradient(180deg,var(--panel),var(--panel-2));border-right:1px solid var(--border);padding:18px 16px}
+    .brand{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+    .brand .dot{width:12px;height:12px;border-radius:50%;background:var(--brand)}
+    .brand h1{margin:0;font-size:18px;font-weight:700} .brand small{display:block;color:var(--muted);margin-top:2px}
+    .gate{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:20px;z-index:99}
+    .gate-card{width:min(560px,95vw);background:var(--panel);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:26px 22px}
+    .input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:#0a1220;color:#e6edf3}
+    .btn{background:var(--brand);color:#002133;border:0;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
+    .btn.secondary{background:#1f2937;color:#e6edf3;border:1px solid var(--border)} .btn:disabled{opacity:.5;cursor:default}
+    .section-label{color:var(--muted);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin:18px 6px 8px}
+    .module-title{font-weight:800;margin:10px 6px 8px;color:#d1eaff}
+    .list{list-style:none;margin:0;padding:0}
+    .item{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:10px 12px;margin:4px 0;border-radius:12px;border:1px solid transparent}
+    .item:hover{background:#0f1a2a} .item.active{background:#0c1d2b;border-color:#21405f}
+    .badge{font-size:12px;color:var(--muted)} .check{color:var(--ok);margin-right:6px}
+    .main{padding:22px 22px 60px}
+    .card{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+    .title{font-size:24px;margin:6px 0 14px}
+    iframe{width:100%;height:560px;border:0;border-radius:14px;background:#000}
+    .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+    .chip{padding:10px 12px;background:#0b1526;border:1px solid var(--border);border-radius:10px}
+    .notes{margin-top:16px;padding:14px;background:#0a1220;border:1px solid var(--border);border-radius:12px;color:#dbeafe;white-space:pre-wrap}
+    .notes h3{margin:0 0 8px;font-size:16px} .muted{color:var(--muted)}
+    .pager{display:flex;gap:10px;justify-content:space-between;margin-top:18px}
+    .home-hero{padding:22px;border:1px solid var(--border);border-radius:var(--radius);
+      background:radial-gradient(1200px 600px at 10% -10%, rgba(34,211,238,.15), transparent),
+                 linear-gradient(180deg,var(--panel),var(--panel-2));box-shadow:var(--shadow)}
+    .recap-card{margin-top:18px}
+    .embed{margin-top:14px}
+  </style>
+</head>
+<body>
+
+<!-- Access gate -->
+<div id="gate" class="gate" style="display:none">
+  <div class="gate-card">
+    <h2>Enter Access Code</h2>
+    <p class="muted">This course is locked. Please enter the access code to continue.</p>
+    <input id="gateInput" class="input" placeholder="Access code" />
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <button class="btn" onclick="checkGate()">Unlock</button>
+      <button class="btn secondary" onclick="location.reload()">Cancel</button>
+    </div>
+    <p id="gateErr" style="color:var(--danger);margin:10px 0 0 2px;display:none">Invalid code, please try again.</p>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main" id="main"></main>
+</div>
+
+<script>
+/* ==================== config ==================== */
+const VERSION       = "2025-09-17-m1+m2+m3+m4-inline";   // cache-buster for iframes
+const ACCESS_CODE   = "JulieOffer";
+const BRAND = { org:"Planted in Nutrition", author:"Julie Wallace, RDN, LD", course:"Weight & Fat Loss: 101" };
+/* ==================== Modules ==================== */
+const MODULES = [
+  /* -------- Module 1 -------- */
+  {
+    slug: "module-1",
+    title: "Fat Loss Fundamentals",
+    lessons: [
+      { n:1, code:"1.0", title:"Basal Metabolic Rate & Energy Expenditure",
+        video:"https://drive.google.com/file/d/1YhhE0UIACQOPf0lzF1NevQj-W9142eIq/preview", docs:[] },
+      { n:2, code:"1.1", title:"Why Do We Gain Fat?",
+        video:"https://drive.google.com/file/d/1HM2S5LpXZ5_7dqeM_Osa3z1moxLyFLuU/preview", docs:[] },
+      { n:3, code:"1.2", title:"How Do We Lose Fat?",
+        video:"https://drive.google.com/file/d/1GeN_yq_ol9jEUUvGySxodtAvi9_6d-Kr/preview", docs:[] },
+      { n:4, code:"1.3", title:"What Happens When You Lose Fat?",
+        video:"https://drive.google.com/file/d/1-bs22R7FGRdwD7o_r0kniE2m8g5hSfYH/preview",
+        link:"https://drive.google.com/file/d/1-bs22R7FGRdwD7o_r0kniE2m8g5hSfYH/view?usp=drive_link",
+        docs:[] },
+      { n:5, code:"1.4", title:"Fat Loss & Exercise",
+        video:"https://drive.google.com/file/d/1Y103LdQxY2QnUEavk91XK6ec15mR0iPp/preview", docs:[] },
+      { n:6, code:"1.5", title:"What Hinders Fat Loss?",
+        video:"https://drive.google.com/file/d/10kpjrXhvW91Ea2z4Z6Onu9NfiU2EIlWa/preview", docs:[] }
+    ],
+    resources:[
+      { label:"Module 1 Recap (Download PDF)", url:"https://docs.google.com/document/d/1RKctMkeo3XzEeuXeISGByOPZFGrwPQ0LBuwN5SlXzFs/export?format=pdf" }
+    ]
+  },
+  /* -------- Module 2 -------- */
+  {
+    slug: "module-2",
+    title: "Setting Targets & Building Your Plan",
+    lessons: [
+      { n:1, code:"2.0", title:"Calculating Your TDEE",
+        video:"https://drive.google.com/file/d/1G5IgLa_Zhv4aA8aA8DR2H2FmL3vTCeFL/preview", docs:[] },
+      { n:2, code:"2.1", title:"Creating The Deficit",
+        video:"https://drive.google.com/file/d/1mz8ThZ7ifCGI-sKh-I5Z3WCxeTaxunEs/preview", docs:[] },
+      { n:3, code:"2.2", title:"Setting Protein Targets",
+        video:"https://drive.google.com/file/d/1WPzkt59uOLo-JUrtzx-ia9g5STWn3JoG/preview", docs:[] },
+      { n:4, code:"2.3", title:"Setting Fat Targets",
+        video:"https://drive.google.com/file/d/1TkciiodLJal7ABLtoVD2Ob-xkN5sgUD-/preview", docs:[] },
+      { n:5, code:"2.4", title:"Setting Carbohydrate Targets",
+        video:"https://drive.google.com/file/d/1GMVFW6smwxavfQChPqGD2WoivkYF63yM/preview", docs:[] },
+      { n:6, code:"2.5", title:"What About Micronutrients?",
+        video:"https://drive.google.com/file/d/1KVQpMuaTmr9jueULpfBGzZHuwBU29fd1/preview", docs:[] },
+      { n:7, code:"2.6", title:"Food Choices",
+        video:"https://drive.google.com/file/d/1wxTJJcHpAuoC9x8YUBxHSQHFbYKRLfCe/preview", docs:[] },
+      { n:8, code:"2.7", title:"Adjusting The Variables",
+        video:"https://drive.google.com/file/d/1oLBMtqpotfNPBttzbKK9IUhIhuR_TAj8/preview", docs:[] },
+      { n:9, code:"2.8", title:"Meal Prepping",
+        video:"https://drive.google.com/file/d/1NgvNan3IszlGH6Uzz031dhVNL2BAqnCH/preview", docs:[] },
+      { n:10, code:"2.9", title:"Frequently Asked Questions",
+        video:"https://drive.google.com/file/d/1dh1aP3xuwGXXxSsEn6MOpVCLJ4CjK1q3/preview", docs:[] },
+      { n:11, code:"2.10", title:"The Weight Loss Journey",
+        video:"https://drive.google.com/file/d/1vAmNCHGwt7_kGU9u3m9YCJJ3VQUIM4Db/preview", docs:[] }
+    ],
+    resources:[
+      { label:"Module 2 (Doc → PDF)", url:"https://docs.google.com/document/d/1N2cF0koxcq_0ctL5U_IwLVoHmAXAj8sq5ziKWDiU72I/export?format=pdf" },
+      { label:"Module 2 — The Weight Loss Journey & Summary (Doc → PDF)", url:"https://docs.google.com/document/d/16zDnyIXyD5rh5ESMlK-Xq26AQ56EYOWoRiCf8C1NfQQ/export?format=pdf" },
+      { label:"Weight Loss Tracker — Week 1 & 2 (PDF)", url:"https://drive.google.com/uc?export=download&id=1hGeepb7agF6KglJgXnS_GbLtoRoSomq6" }
+    ],
+    embeds:{
+      module2DocPreview: "https://docs.google.com/document/d/1N2cF0koxcq_0ctL5U_IwLVoHmAXAj8sq5ziKWDiU72I/preview",
+      module2SummaryPreview: "https://docs.google.com/document/d/16zDnyIXyD5rh5ESMlK-Xq26AQ56EYOWoRiCf8C1NfQQ/preview",
+      trackerPreview: "https://drive.google.com/file/d/1hGeepb7agF6KglJgXnS_GbLtoRoSomq6/preview"
+    }
+  },
+  /* -------- Module 3 -------- */
+  {
+    slug: "module-3",
+    title: "Weight Loss Exercise, In Practice",
+    lessons: [
+      { n:1, code:"3.0", title:"Types of Training: Aerobic vs Anaerobic",
+        video:"https://drive.google.com/file/d/10GHeHaISOFyt185TWmOeo3hKCaH7_mFf/preview", docs:[] },
+      { n:2, code:"3.1", title:"What’s Best for Fat Loss? The Ideal Approach",
+        video:"https://drive.google.com/file/d/1uc2MBEMYyuj-NgoU_4zVc6FTq_fNpQuj/preview", docs:[] },
+      { n:3, code:"3.2", title:"Training Frequency & Consistency",
+        video:"https://drive.google.com/file/d/10VZQhKiPjjpN4tH2M7lMzGwa7p5eBNg6/preview", docs:[] },
+      { n:4, code:"3.3", title:"Effective Workouts, Exercise Selection & Rest",
+        video:"https://drive.google.com/file/d/1QIsTiQMOz9Dgrxp9kl2C3ogy2FxLCFaw/preview", docs:[] }
+    ],
+    resources:[
+      { label:"Module 3 — Exercise In Practice (Doc → PDF)", url:"https://docs.google.com/document/d/185Nd6jKJagWmtiDn3m2CvVQ3PMJuUd6AM54wlJAF_10/export?format=pdf" }
+    ],
+    embeds:{
+      module3DocPreview: "https://docs.google.com/document/d/185Nd6jKJagWmtiDn3m2CvVQ3PMJuUd6AM54wlJAF_10/preview"
+    }
+  },
+  /* -------- Module 4 -------- */
+  {
+    slug: "module-4",
+    title: "The Psychology of Fat & Weight Loss",
+    lessons: [
+      { n:1, code:"4.1", title:"Setting Realistic Goals",
+        video:"https://drive.google.com/file/d/1TqjoeQVdKZm1Gshuzw25yQImge8uDWoh/preview", docs:[] },
+      { n:2, code:"4.2", title:"The Role of Motivation",
+        video:"https://drive.google.com/file/d/15-K6cUCMehiCXCN0z-Fhncc8NOgCMsmk/preview", docs:[] },
+      { n:3, code:"4.3", title:"The Role of Discipline",
+        video:"https://drive.google.com/file/d/1d5sPCk1AjXOLKMfJG1GKnjN5QtQl8AkD/preview", docs:[] },
+      { n:4, code:"4.4", title:"The Fitness Mindset",
+        video:"https://drive.google.com/file/d/1EZC70P7628MayYCyi12SSXQ4gkSeQ9T2/preview", docs:[] },
+      { n:5, code:"4.5", title:"Dealing with Emotional Eating",
+        video:"https://drive.google.com/file/d/1oo1GI1v4KZ_ygABi_ojPAmY2Fz83Ev2X/preview", docs:[] },
+      { n:6, code:"4.6", title:"Addressing Negative Self-Talk",
+        video:"https://drive.google.com/file/d/1KQ9gdXxEPK6pXV1piVE7M_-F9wp014Tu/preview", docs:[] },
+      { n:7, code:"4.7", title:"Avoiding Extremes",
+        video:"https://drive.google.com/file/d/1GKRVLvo66lbiBEs4JKP3zD6LllHn0OE-/preview", docs:[] },
+      { n:8, code:"4.8", title:"How To Keep The Weight Off",
+        video:"https://drive.google.com/file/d/1yDTSMZZTtw0F7n1KPoMnauIo4CDmaHk6/preview", docs:[] }
+    ],
+    resources:[
+      { label:"Module 4 — The Psychology of Fat & Weight Loss (Doc → PDF)", url:"https://docs.google.com/document/d/143URPjJLJ79w2C_mZB8AOXHsWjh0wzUGXbXnLxCR3-U/export?format=pdf" },
+      { label:"Smart Goal Map (PDF)", url:"https://drive.google.com/uc?export=download&id=1KsJLSCyFvNITp5nZgrUFP5IIrcWmmZ3S" }
+    ],
+    embeds:{
+      module4DocPreview: "https://docs.google.com/document/d/143URPjJLJ79w2C_mZB8AOXHsWjh0wzUGXbXnLxCR3-U/preview",
+      smartGoalPreview: "https://drive.google.com/file/d/1KsJLSCyFvNITp5nZgrUFP5IIrcWmmZ3S/preview"
+    }
+  }
+];
+/* ==================== Inline Notes ==================== */
+const NOTES = {
+  /* ---- Module 1 ---- */
+  "module-1:1": `🔥Basal Metabolic Rate & Energy Expenditure
+Let’s start with your Basal Metabolic Rate (BMR)—this is the amount of energy (calories) your body needs just to keep you alive and functioning while at rest. 
+Think of it as the baseline: the calories your body burns to keep your heart beating, lungs breathing, and cells doing their thing—even if you stayed in bed all day.
+Your BMR is measured in calories per day, and it’s influenced by several factors. One of the biggest? Muscle mass. If you have more muscle, your body burns more calories at rest—even if your weight is the same as someone else’s. Why? Because muscle tissue is metabolically active and requires more energy to maintain than fat tissue.
+So if you and someone else have the same height and weight, but you’ve got more lean muscle, you’ll naturally burn more calories just by existing. That’s a win for your metabolism.
+🧬 What Else Affects Your BMR?
+Besides muscle mass, your BMR is also shaped by:
+Gender: Men tend to have more muscle mass than women, which usually means a higher BMR.
+Age: As you get older, muscle mass tends to decline—so BMR often drops too.
+But again, muscle mass is the key player here. The more you preserve or build muscle, the more you support your metabolism.
+🧩 BMR Is Just One Piece of the Puzzle
+Your BMR makes up a big chunk—about 60%—of your Total Daily Energy Expenditure (TDEE). But it’s not the whole story. To understand how many calories your body burns in a day, you also need to factor in:
+Your gender, age, height, and weight
+How much you move (non-exercise activity like walking, cleaning, fidgeting)
+How much you exercise (structured workouts or sports)
+The thermic effect of food (calories burned digesting and absorbing food)
+The more active you are—whether through workouts or just daily movement—the higher your TDEE. Even small things like standing more or taking the stairs can add up.
+And yes, even digestion burns calories. That’s the thermic effect of food, and it varies depending on what and how much you eat.
+🧠 Why This Matters for Fat Loss
+To lose fat, you need to understand how much energy your body uses—and how you can influence it. Your TDEE gives you a personalized estimate of how many calories you burn each day. From there, you can adjust your intake and activity to create a calorie deficit (burning more than you consume), which is key for fat loss.
+Here’s the empowering part:
+ You can influence your energy expenditure by:
+Moving more throughout the day
+Exercising regularly
+Eating in a way that supports metabolism
+Building or maintaining muscle mass
+Your metabolism isn’t fixed—it’s adaptable. And understanding your BMR and TDEE gives you the tools to work with your body, not against it.`,
+  "module-1:2": `🧠Why Do We Gain Fat?
+Let’s break it down simply: body fat is your body’s way of storing energy. That’s its core job. When you eat more energy (calories) than your body needs, it doesn’t just disappear—it gets stored. And that storage? It’s fat.
+From an evolutionary perspective, this was a survival superpower. Back when food wasn’t always available, your body needed a way to save up extra energy for the lean times. Fat storage made that possible.
+⚖️ The Calorie Balance Equation
+Your body has a unique number of calories it needs each day to maintain your current weight. This includes your BMR (the energy you burn at rest) plus everything else—movement, exercise, digestion, etc.
+If you consistently eat more than your body needs, it stores the extra.
+ If you consistently eat less, your body taps into those stored reserves (fat) for energy.
+So while there are lots of theories out there about weight gain, the most fundamental reason is this:
+ Calories in vs. calories out. That’s the core of fat gain.
+🛡️ But Fat Isn’t the Enemy
+Here’s something important: body fat isn’t bad. In fact, it’s essential. Losing all your fat isn’t the goal—and it wouldn’t be healthy.
+Your body fat plays several key roles:
+Regulates your body temperature
+Protects your organs, bones, and muscles
+Stores hormones that help control hunger, appetite, and other vital functions
+So yes, fat is energy storage—but it’s also a functional, protective part of your physiology. The goal isn’t to lose as much as possible. It’s to find a healthy balance that supports your body and your goals.
+🧾 Quick Recap: What You Need to Know
+Body fat = energy storage
+You gain fat when you consistently eat more than your body needs
+Fat helps regulate temperature and protect vital organs
+Fat stores key hormones that influence hunger and metabolism
+Fat isn’t something to “get rid of”—it’s something your body uses`,
+  "module-1:3": `🔍 How Do We Lose Fat?
+Let’s bring it back to your metabolism. Your Basal Metabolic Rate (BMR) is a key part of the fat loss equation—it’s the number of calories your body burns just to keep you alive and functioning at rest. It’s influenced by things like your age, gender, muscle mass, and overall body composition.
+But here’s the thing: BMR isn’t the whole story.
+To get a clearer picture of how many calories you burn in a day, we also need to factor in your lifestyle—how much you move, what you eat, and how active you are overall. When you combine all those pieces, you get your Total Daily Energy Expenditure (TDEE). That’s the number that really matters when it comes to fat loss.
+🔥 The Real Key: Caloric Deficit
+If you want to lose fat, the most important thing is this:
+ You need to burn more energy than you consume.
+ That’s called a caloric deficit—and it’s the foundation of every successful fat loss strategy.
+You can create that deficit in two main ways:
+Eat fewer calories than your body needs
+Burn more calories through movement and exercise
+Ideally, you do a bit of both. A balanced diet with nutrient-dense foods and smart portion control helps you manage intake. And regular physical activity—whether it’s structured workouts or just moving more throughout the day—helps you increase your output.
+🧠 What About Hormones and Genetics?
+You might’ve heard that things like insulin, hormones, or genetics are the “real” reasons people gain weight. And yes, they can influence how your body responds to food and stores fat. But here’s what the science consistently shows:
+👉 Energy balance—calories in vs. calories out—is still the most critical factor.
+Hormones and genetics may affect how your body handles calories, but they don’t override the basic math. If you consistently eat more than your body uses, fat gain happens. If you consistently eat less, fat loss follows.
+🧾 Quick Recap: What You Need to Know
+BMR is your baseline calorie burn, but TDEE gives the full picture
+Fat loss happens when you’re in a caloric deficit
+You can create a deficit by eating less, moving more, or both
+A balanced diet and regular activity support metabolism and fat loss
+Hormones and genetics matter—but energy balance is still king`,
+  "module-1:4": `🧠 What Really Happens When You Lose Fat?
+Losing weight can feel empowering. You might notice changes in how you look, how your clothes fit, and how confident you feel. But beneath the surface, your body is going through a much deeper transformation—and it’s not just about burning fat.
+When you’re in a caloric deficit (eating fewer calories than your body needs), your body has to make up the difference by tapping into stored energy. That’s where fat loss comes in. But this process also comes with some important side effects.
+⚙️ Metabolic Adaptations: Your Body’s Survival Mode
+Your body is incredibly smart. It’s evolved to survive tough times—like famine or food scarcity. So when you consistently eat less than your body needs, it doesn’t just burn fat and move on. It adapts.
+Here’s what happens:
+Your body sees the calorie drop as a threat (like starvation).
+It responds by slowing down your metabolism to conserve energy.
+You might feel more tired, less motivated to move, and even notice your weight loss stalling.
+This is called metabolic adaptation—and it’s your body’s way of protecting itself. What started as a calorie deficit can eventually become your new “maintenance,” meaning you stop losing weight even though you haven’t changed your intake.
+This is why many people hit a weight loss plateau. It’s not failure—it’s biology. And yes, there are smart ways to work around it (we’ll dive into that in Module 2).
+💪 Loss of Lean Body Mass: The Hidden Cost
+Here’s another piece that often gets overlooked: when you lose weight, it’s not just fat that disappears. You can also lose lean body mass—which includes muscle, bone, and even organ tissue.
+That matters because:
+Lean mass helps keep your metabolism strong.
+Muscle tissue burns more calories at rest than fat.
+Losing too much lean mass can make you feel weaker, slower, and less energized.
+If your diet is too strict or lacks the right nutrients, your body may start breaking down muscle for energy. That’s why preserving lean mass is crucial during any fat loss phase. It’s not just about the scale—it’s about protecting your strength and long-term health.
+🧾 Quick Recap: What You Need to Know
+Fat loss happens in a caloric deficit, but your body sees that as a stressor.
+It adapts by slowing metabolism, which can lead to plateaus.
+You may feel tired, sluggish, or less active as your body conserves energy.
+Weight loss can also include loss of lean body mass—not just fat.
+Lean mass is vital for metabolism, strength, and overall health.
+Smart, balanced nutrition and strategic planning help minimize these side effects.`,
+  "module-1:5": `🧠 What Really Happens When You Lose Fat?
+Losing weight can feel empowering. You might notice changes in how you look, how your clothes fit, and how confident you feel. But beneath the surface, your body is going through a much deeper transformation—and it’s not just about burning fat.
+When you’re in a caloric deficit (eating fewer calories than your body needs), your body has to make up the difference by tapping into stored energy. That’s where fat loss comes in. But this process also comes with some important side effects.
+⚙️ Metabolic Adaptations: Your Body’s Survival Mode
+Your body is incredibly smart. It’s evolved to survive tough times—like famine or food scarcity. So when you consistently eat less than your body needs, it doesn’t just burn fat and move on. It adapts.
+Here’s what happens:
+Your body sees the calorie drop as a threat (like starvation).
+It responds by slowing down your metabolism to conserve energy.
+You might feel more tired, less motivated to move, and even notice your weight loss stalling.
+This is called metabolic adaptation—and it’s your body’s way of protecting itself. What started as a calorie deficit can eventually become your new “maintenance,” meaning you stop losing weight even though you haven’t changed your intake.
+This is why many people hit a weight loss plateau. It’s not failure—it’s biology. And yes, there are smart ways to work around it (we’ll dive into that in Module 2).
+💪 Loss of Lean Body Mass: The Hidden Cost
+Here’s another piece that often gets overlooked: when you lose weight, it’s not just fat that disappears. You can also lose lean body mass—which includes muscle, bone, and even organ tissue.
+That matters because:
+Lean mass helps keep your metabolism strong.
+Muscle tissue burns more calories at rest than fat.
+Losing too much lean mass can make you feel weaker, slower, and less energized.
+If your diet is too strict or lacks the right nutrients, your body may start breaking down muscle for energy. That’s why preserving lean mass is crucial during any fat loss phase. It’s not just about the scale—it’s about protecting your strength and long-term health.
+🧾 Quick Recap: What You Need to Know
+Fat loss happens in a caloric deficit, but your body sees that as a stressor.
+It adapts by slowing metabolism, which can lead to plateaus.
+You may feel tired, sluggish, or less active as your body conserves energy.
+Weight loss can also include loss of lean body mass—not just fat.
+Lean mass is vital for metabolism, strength, and overall health.
+Smart, balanced nutrition and strategic planning help minimize these side effects.`,
+  "module-1:6": `🚧 What Can Hinder Your Fat Loss?
+Let’s be honest—losing fat isn’t just about knowing the science. It’s about applying it consistently, day after day, in real life. And real life? It’s full of curveballs.
+Yes, calories in vs. calories out is the foundation of fat loss. But sticking to a calorie deficit over time takes more than just willpower—it takes strategy, awareness, and support. Let’s look at some of the most common roadblocks that can slow down or stall your progress.
+😴 Sleep: The Underrated Fat Loss Tool
+Sleep isn’t just rest—it’s metabolic recovery. While you sleep, your body repairs itself, balances hormones, and resets your appetite signals. Without enough quality sleep, things start to unravel:
+Hunger hormones like ghrelin (which increases appetite) and leptin (which signals fullness) get thrown off.
+You’re more likely to crave high-calorie comfort foods.
+Motivation to move or exercise drops.
+Your body burns less fat—even if you’re in a calorie deficit.
+In fact, a 2011 study showed that people who slept just 5.5 hours per night lost significantly less fat than those who slept 8.5 hours—even though both groups were dieting.
+So if you’re serious about fat loss, prioritize sleep. It’s not optional—it’s essential.
+😫 Stress: The Silent Saboteur
+Chronic stress doesn’t just mess with your mood—it messes with your metabolism. When stress is high, your body pumps out cortisol, a hormone that:
+Encourages fat storage (especially around the belly)
+Disrupts sleep
+Increases cravings and emotional eating
+Makes it harder to stick to healthy habits
+Stress also makes you more likely to reach for quick fixes—like sugary snacks or skipping workouts. And when stress affects sleep, it creates a vicious cycle that can derail your progress.
+Managing stress through movement, mindfulness, and relaxation isn’t just good for your mental health—it’s a direct investment in your fat loss success.
+🍿 Mindless Eating: The Sneaky Calorie Creep
+Unconscious snacking is one of the fastest ways to sabotage a calorie deficit. A handful of chips here, a few sips of a sugary drink there—it all adds up. And because it’s not tracked or intentional, it’s easy to underestimate how much you’re actually consuming.
+Here’s how to stay ahead of it:
+Keep a food journal to stay aware of what you’re eating
+Prep meals and snacks so you’re not relying on impulse
+Limit exposure to tempting foods (out of sight, out of mind)
+Practice mindful eating—slow down, taste your food, and tune into hunger cues
+Being intentional with your choices helps you stay in control—and dramatically increases your chances of reaching your goals.
+🧾 Quick Recap: What to Watch Out For
+Poor sleep disrupts hormones and slows fat loss
+Chronic stress raises cortisol and triggers emotional eating
+Mindless snacking adds hidden calories that sabotage your deficit
+Managing these factors is just as important as tracking your food and workouts`,
+  /* ---- Module 2 (exact text you provided) ---- */
+  "module-2:1": `🔢2.0 Calculating Your TDEE
+Before you can build a smart fat loss plan, you need to know how many calories your body burns in a day. That number is called your Total Daily Energy Expenditure (TDEE)—and it’s your starting point.
+Your TDEE includes:
+Your Basal Metabolic Rate (BMR)—the calories you burn at rest
+Plus everything else: movement, workouts, digestion, and lifestyle habits
+Knowing your TDEE helps you figure out how many calories you need to maintain your current weight. From there, you can adjust your intake to create a deficit and lose fat.
+🧮 A Simple Way to Estimate TDEE
+You can use online calculators for a more detailed estimate, but here’s a quick formula:
+Multiply your body weight (in pounds) by:
+12 if you’re mostly sedentary
+13 if you exercise 2–3 times per week
+14–15 if you exercise 3–6 times per week
+Example:
+ If you weigh 200 lbs and work out 2–3 times a week:
+ 200 × 13 = 2600 calories/day for maintenance
+This is just a starting point. Your actual needs may vary based on metabolism, body composition, and lifestyle. That’s why it’s important to track progress and adjust as needed.
+BONUS: I have provided an additional handout (PDF) that contains a link to one of my favorite TDEE calculators- even easier than doing the math yourself!`,
+  "module-2:2": `📉 2.1 Creating the Deficit
+Once you’ve estimated your TDEE, the next step is to create a caloric deficit—meaning you eat fewer calories than your body burns. That’s how fat loss happens.
+When you’re in a deficit, your body taps into stored fat for energy. Over time, this leads to weight loss.
+🔧 How Much Should You Cut?
+A safe and effective deficit is usually 400–500 calories below your TDEE. This typically results in a weight loss of 1–2 pounds per week, which is sustainable and healthy.
+If you’re starting with more body fat, you may lose weight faster at first—up to 4–5 pounds per week—without harming your health. As your body composition improves, that rate will naturally slow down.
+📊 Monitor & Adjust
+Your initial estimate is just that—an estimate. Track your weight weekly and adjust your intake if needed. If you’re losing too fast or too slow, tweak your calories slightly.
+And remember: rapid weight loss often leads to rapid regain. The goal is steady, sustainable progress—not extremes.`,
+  "module-2:3": `🥩2.2 Setting Protein Targets
+Once you’ve set your calorie goal, it’s time to break those calories down into macronutrients—starting with protein.
+Protein is the most important nutrient during fat loss because it:
+Preserves muscle mass
+Keeps you feeling full
+Supports overall health
+Your body can’t make essential amino acids on its own, so you need to get them from food. That’s why protein is non-negotiable.
+📏 How Much Protein Do You Need?
+Aim for 1 gram of protein per pound of body weight.
+ Example: If you weigh 200 lbs, your target is 200 grams of protein/day.
+That gives you 800 calories from protein (since protein has 4 calories per gram).
+Getting enough protein helps you stay strong, energized, and metabolically active—even in a deficit.`,
+  "module-2:4": `🥑 2.3 Setting Fat Targets
+Next up: fat intake. Despite its reputation, dietary fat is essential. It helps:
+Absorb fat-soluble vitamins
+Support hormone production
+Provide long-lasting energy
+📏 How Much Fat Do You Need?
+A good starting point is 0.45 grams of fat per pound of body weight.
+ Example: 200 lbs × 0.45 = 90 grams of fat/day
+ That gives you 810 calories from fat (since fat has 9 calories per gram).
+You can adjust this slightly based on personal preference, but fat should never drop below 20% of your total intake. That’s the minimum your body needs to function properly.`,
+  "module-2:5": `🍞2.4 Setting Carbohydrate Targets
+Once protein and fat are set, the rest of your calories go to carbohydrates. Carbs aren’t the enemy—they’re your body’s preferred fuel, especially during workouts.
+Carbs also provide fiber, which supports digestion and satiety.
+🧮 How to Calculate Your Carb Intake
+Subtract protein and fat calories from your total daily calories
+Divide the remaining calories by 4 (since carbs have 4 calories per gram)
+Example for a 200 lb person:
+TDEE = 2600
+Deficit = 2100
+Protein = 200g = 800 cal
+Fat = 90g = 810 cal
+Remaining = 2100 - 800 - 810 = 490 cal
+Carbs = 490 ÷ 4 = 122g of carbs/day
+You can adjust based on preference—some people feel better with more carbs, others with more fat. Just keep it balanced and avoid extremes.`,
+  "module-2:6": `🌱2.5 What About Micronutrients?
+Micronutrients don’t provide calories, but they’re essential for health. These include:
+Vitamins
+Minerals
+Fiber
+They support everything from immune function to skin health to digestion.
+🥗 Do You Need to Track Them?
+Not necessarily. If your diet includes a variety of whole foods—fruits, vegetables, lean proteins, whole grains, healthy fats—you’re likely covering your bases.
+The key is variety. Mix up your meals, eat the rainbow, and you’ll naturally get the micronutrients your body needs.`,
+  "module-2:7": `🥗2.6 Food Choices
+Calories matter—but what you eat matters too. The types of foods you choose can influence your hunger, energy levels, nutrient intake, and how well your body responds to a calorie deficit.
+One key concept to understand is bioavailability—how well your body absorbs and uses the nutrients in food. Some foods are more bioavailable than others, meaning your body can extract and use their nutrients more efficiently.
+🍖 Animal vs. Plant-Based Protein Sources
+Animal-based foods like meat, fish, eggs, and dairy tend to have high bioavailability and contain all 9 essential amino acids, making them complete proteins. They’re also highly satiating, which helps you feel full longer—especially helpful during fat loss.
+But here’s the important part:
+ Vegetarians and vegans can absolutely meet their protein needs.
+ While most plant-based proteins are incomplete (missing one or more essential amino acids), combining different sources—like legumes + grains or nuts + seeds—can create a complete amino acid profile. Foods like soy, quinoa, lentils, tempeh, and pea protein are especially powerful options. Also, eating a variety of amino acids throughout the day can lead to the body getting what it needs so the idea of having to create complete proteins has been debunked! 
+Plant-based diets also offer:
+High fiber for digestion and fullness
+Lower calorie density for volume eating
+A wide range of vitamins and minerals
+🥑 Striking the Right Balance
+Whether you eat animal products or not, the goal is the same:
+ Build your meals around nutrient-dense, whole foods that support your goals and keep you satisfied.
+Here’s a sample list of top foods to include in a weight loss plan:
+Grass-fed beef or organs (if omnivorous)
+Salmon, tuna, or other fatty fish
+Free-range eggs and dairy (if included)
+Avocados
+Nuts and seeds
+Beans and legumes
+Soy products (tofu, tempeh, edamame)
+Quinoa and whole grains
+A variety of fruits
+A variety of vegetables
+Whether you’re omnivorous, vegetarian, or vegan, the key is variety and intentionality. Mix and match foods that support your protein, fiber, and micronutrient needs.
+🍟 What About Processed Foods?
+Let’s talk about the elephant in the pantry: junk food. Do you have to give it up completely to lose weight?
+Not necessarily.
+Processed foods—like chips, cookies, and sugary snacks—often contain trans fats, additives, and low-quality ingredients. But here’s the truth:
+ The dose makes the poison.
+If your overall diet is built around whole, nutrient-dense foods, having a small portion of processed foods won’t derail your progress. In fact, allowing some flexibility can help you:
+Maintain a healthier relationship with food
+Reduce cravings and binge tendencies
+Stay consistent long-term
+When you completely restrict certain foods, they often become “forbidden,” which makes them feel more special—and more tempting. That can lead to overindulgence when you finally give in.
+Instead, include them strategically and mindfully:
+Enjoy small portions without guilt
+Don’t rely on them as staples
+Keep the majority of your intake focused on whole foods
+🧾 Quick Recap: Food Choices That Support Fat Loss
+Choose foods with high bioavailability and complete protein profiles
+Vegetarians and vegans can meet protein needs with smart combinations
+Prioritize fiber-rich, nutrient-dense whole foods
+Include processed foods in moderation to support sustainability
+Variety and balance are key to long-term success`,
+  "module-2:8": `📊2.7 Adjusting the Variables
+Once you’ve set your calorie deficit and macronutrient targets, the next step is to track your progress and make adjustments as needed. This isn’t a “set it and forget it” process—your body will change, and your plan should evolve with it.
+⚖️ How to Track Your True Weight
+To get an accurate picture of your weight trend:
+Weigh yourself every morning, right after using the bathroom, before eating, and without clothes
+Keep the scale in the same spot each day to avoid fluctuations from uneven surfaces
+At the end of the week, add up all 7 weigh-ins and divide by 7 to get your weekly average
+This average gives you a clearer view than a single weigh-in, which can be affected by water retention, digestion, or sleep.
+🔧 When to Adjust Your Calories
+Use your weekly average to guide your next move:
+Lost 1–2 lbs? Great—no changes needed
+Lost 0.1–0.5 lbs? Reduce calories by up to 200/day
+Gained weight? Reduce calories by up to 300/day
+Lost more than 2–3 lbs? If you’re not overweight or obese, increase calories by up to 200/day to slow the pace
+⚠️ Important:
+ In the first week, you might drop 5–7 lbs. That’s mostly water and food weight, not just fat. So wait until week two before making any adjustments.
+Also, when reducing calories, cut mostly from carbs, then fat—but never from protein. Protein is essential for preserving muscle and keeping your metabolism strong.
+BONUS: I’ve included a tracking worksheet if you want to also track your body composition. For women: use all 4 measurements. For men: measure just your waist and hips.`,
+  "module-2:9": `🍱2.8 Meal Prepping
+Let’s be real—sticking to a nutrition plan is one of the hardest parts of fat loss. Life gets busy, cravings hit, and convenience often wins. That’s where meal prepping comes in.
+Meal prepping is one of the most effective ways to stay consistent. It helps you:
+Save time during the week
+Avoid impulsive food choices
+Stick to your calorie and macro goals
+Reduce stress around “what’s for dinner?”
+🥗 How to Meal Prep Simply
+You don’t need fancy containers or hours in the kitchen. Just follow this basic structure:
+Cook protein and carb sources in bulk (e.g., grilled chicken, lentils, rice, quinoa)
+Keep quick-add items on hand like raw veggies, fruits, nuts, and seeds
+Mix and match throughout the week to keep meals fresh and satisfying
+Whether you’re omnivorous, vegetarian, or vegan, prepping ahead gives you control—and removes the guesswork. It’s one of the best ways to turn your nutrition plan into a habit you can actually stick with.
+🌱 Want More Support?
+If you’re looking for step-by-step guidance, tailored meal plans, or just want help simplifying the process, you’ll find plenty of resources at Planted in Nutrition. From meal planning guidelines to personalized coaching, you can work directly with me to build a plan that fits your life, your goals, and your plate
+Also, if you’re working with your own Dietitian/Nutritionist- share what you have learned here so they can help you reach your goals!`,
+  "module-2:10": `❓2.9 Frequently Asked Questions
+There’s no shortage of myths and confusion when it comes to weight loss. From “fat-burning foods” to artificial sweeteners, it’s easy to get overwhelmed. So let’s clear the air and tackle some of the most common questions—so you can move forward with clarity and confidence.
+🧁 Question 1: Are Artificial Sweeteners Bad?
+This one’s been debated for years. But here’s what the science says:
+ Artificial sweeteners aren’t inherently harmful—and they can actually help.
+Studies show that swapping sugary drinks for zero-calorie sweeteners can:
+Reduce overall calorie intake
+Support weight loss
+Improve blood sugar control (especially helpful for those with diabetes)
+As with anything, moderation matters. But when used wisely, artificial sweeteners can be a useful tool in your fat loss journey—not a threat.
+Myth busted.
+🏃‍♀️ Question 2: Is Cardio Mandatory?
+Nope. You don’t have to do cardio to lose weight.
+ The only thing that’s truly required is a caloric deficit—eating fewer calories than your body burns.
+That said, exercise is highly recommended, especially strength training, which helps:
+Preserve muscle mass
+Support metabolism
+Improve body composition
+Cardio can help you burn extra calories and reach your deficit more easily—but it’s optional, not mandatory.
+🥑 Question 3: Which Foods Make You Lose Weight?
+Despite the hype around “superfoods,” no single food can burn fat on its own.
+ Fat loss happens when your overall energy balance is in check.
+However, some foods can support fat loss by helping you feel full and satisfied. These include:
+High-protein foods (e.g., tofu, chicken, lentils)
+Healthy fats (e.g., avocado, nuts)
+Fiber-rich foods (e.g., vegetables, beans, whole grains)
+These foods help control hunger and cravings, making it easier to stick to your plan.
+🍽️ Question 4: Does Meal Frequency Matter?
+Not really. Whether you eat three meals a day or just one big meal, what matters most is:
+Your total daily calories
+Your macronutrient balance
+Choose a meal frequency that fits your lifestyle and helps you stay consistent. Some people thrive on three structured meals, while others prefer fewer, larger meals. There’s no one-size-fits-all answer—just what works for you.
+Please Note: For many who experience higher cortisol levels, however, eating within the first hour of waking, can be ideal - although most experience less appetite at this time of day due to the elevated cortisol. 
+💊 Question 5: Do Supplements Matter?
+Supplements are not the foundation of fat loss. The real pillars are:
+Nutrition
+Movement
+Sleep
+Stress management
+That said, some supplements can be helpful:
+Protein powder: Great for hitting protein targets, especially if you’re plant-based or on the go
+Creatine: Supports strength and performance
+Caffeine: Boosts energy and focus, especially during a calorie deficit
+Use supplements to support your plan—not replace it. They’re the cherry on top, not the whole sundae.`,
+  /* ---- Module 3 (split per lesson) ---- */
+  "module-3:1": `🏋️‍♀️Types Of Training — Aerobic vs Anaerobic
+There are two main categories of training and both matter for fat loss and overall fitness.
+🫁 Aerobic (Cardio)
+• Moderate intensity for 20+ minutes (jogging, cycling, swimming, brisk walk)
+• Uses oxygen to burn carbs & fat
+• Improves heart/lung function; burns calories during the session
+💥 Anaerobic (Strength & Power)
+• High intensity, short duration (weights, sprints, HIIT)
+• Uses stored energy; recruits more muscle fibers
+• Builds/maintains muscle; bigger “afterburn” (EPOC) post-workout
+🧠 Bottom line: Cardio builds endurance and burns calories; strength training protects muscle and shapes your body. Together = best results.`,
+  "module-3:2": `🔍 What’s Best for Fat Loss? The Ideal Approach
+If you had to choose one, strength training wins for fat loss because it:
+• Preserves lean muscle (keeps metabolism strong)
+• Improves hormone balance & energy
+• Shapes your body — not just makes it smaller
+Great news if you’re new: you can build muscle and lose fat at the same time.
+🧠 Ideal approach
+• Foundation: Strength training
+• Add cardio based on preference/recovery for extra calorie burn
+• Prioritize consistency over perfection
+Combine both for health, sustainability, and long-term results.`,
+  "module-3:3": `📅 Training Frequency & Consistency
+You don’t need to live in the gym. Consistency beats intensity.
+• 2–3 quality sessions/week → solid progress in strength, body comp, and health
+Motivation vs. discipline:
+• Person A: 5 days/wk for 4 months, then burnout
+• Person B: 2–3 days/wk for 8 months, consistently
+Winner = Person B. Habits > hype.
+Focus on fundamentals:
+• Proper form • Progressive overload • Recovery
+Start with 2–3 resistance sessions/week; scale to 5–6 only if lifestyle supports it.`,
+  "module-3:4": `💪 Effective Workouts, Exercise Selection & Rest
+Quality sets = close to your limit without constant failure.
+• If true failure is 10 reps, doing ~8 reps (2 in reserve) is ~80% effort—great for strength & muscle.
+In a calorie deficit: leave 3–4 reps in reserve more often to manage recovery.
+📊 Volume
+• Start ~5 hard sets per muscle/week → build to 10–15 as you adapt.
+🏋️‍♂️ Exercise selection
+• Prioritize compound lifts (squat, hinge/deadlift, bench, row, overhead press).
+• Use isolation lifts to target lagging areas and add variety.
+⏱️ Rest for results
+• Rest 2–3 minutes between demanding working sets.
+• Better rest → better performance → better long-term progress.`
+};
+/* ==================== Module 1 Recap text ==================== */
+const MODULE1_RECAP_TEXT = `🧠 Module 1 Recap: Understanding Your Body & Fat Loss
+Let’s tie everything together. Fat loss isn’t just about eating less and moving more—it’s about understanding how your body works and how to support it through the process. Here are the key takeaways:
+🔥 Your Metabolism & Energy Needs
+Your Basal Metabolic Rate (BMR) is the number of calories your body burns at rest to keep you alive.
+When you add in movement, exercise, and digestion, you get your Total Daily Energy Expenditure (TDEE)—the full picture of how many calories you burn in a day.
+If you consistently eat more than your TDEE, you’ll gain weight (caloric surplus).
+If you consistently eat less, you’ll lose weight (caloric deficit).
+⚙️ What Happens During Fat Loss
+In a calorie deficit, your body slows down to conserve energy.
+You may lose lean body mass (like muscle) along with fat if you’re not careful.
+This is why smart nutrition and movement matter—not just cutting calories.
+🏋️‍♀️ Exercise: Optional but Powerful
+You don’t have to exercise to lose weight—but it helps.
+Strength training preserves muscle, boosts metabolism, and shapes your body.
+Cardio burns calories and improves endurance.
+A mix of both is ideal, but strength training should be your foundation.
+😴 Lifestyle Matters More Than You Think
+Sleep is essential—poor sleep disrupts hormones and slows fat loss.
+Stress raises cortisol, which can lead to fat storage and emotional eating.
+Mindless snacking adds hidden calories that sabotage your deficit.
+Managing these factors helps you stay consistent and avoid plateaus.
+🧠 Final Thoughts
+Your body is smart. When you’re in a deficit, it may push back—slowing metabolism, increasing cravings, and justifying little snacks. That’s why conscious restraint, stress management, and sleep hygiene are just as important as your meal plan.`;
+/* ==================== App logic ==================== */
+const qs = s => document.querySelector(s);
+const main = qs('#main');
+const sidebar = qs('#sidebar');
+function viewedKey(slug,n){ return `viewed:${slug}:${n}`; }
+function setViewed(slug,n){ try{ localStorage.setItem(viewedKey(slug,n),"1"); }catch(e){} }
+function hasViewed(slug,n){ try{ return localStorage.getItem(viewedKey(slug,n))==="1"; }catch(e){ return false; } }
+/* ---- access gate ---- */
+function checkGate(){
+  const v = (qs('#gateInput').value||"").trim();
+  if(v===ACCESS_CODE){
+    try{ localStorage.setItem('access_ok','1'); }catch(e){}
+    qs('#gate').style.display='none';
+    route();
+  }else{
+    qs('#gateErr').style.display='block';
+  }
+}
+function gateIfNeeded(){
+  if(!ACCESS_CODE) return;
+  try{ if(localStorage.getItem('access_ok')==='1') return; }catch(e){}
+  qs('#gate').style.display='flex';
+}
+/* ---- nav + render ---- */
+function renderSidebar(activeSlug, activeN, isResources){
+  let html = `
+    <div class="brand">
+      <div class="dot"></div>
+      <div>
+        <h1>${BRAND.course}</h1>
+        <small>${BRAND.org} • ${BRAND.author}</small>
+      </div>
+    </div>
+  `;
+  MODULES.filter(m => (m.lessons||[]).length>0).forEach((m, mi)=>{
+    html += `<div class="section-label">Module ${mi+1}</div><div class="module-title">${m.title}</div><ul class="list">`;
+    m.lessons.forEach(l=>{
+      const active = (m.slug===activeSlug && l.n===activeN && !isResources);
+      html += `<li class="item ${active?'active':''}">
+        <a href="#/${m.slug}/lesson/${l.n}" aria-current="${active?'page':'false'}">
+          <span>${hasViewed(m.slug,l.n)?'<span class="check">✓</span>':''}${l.code} — ${l.title}</span>
+        </a>
+        <span class="badge">Lesson</span>
+      </li>`;
+    });
+    const rActive = (m.slug===activeSlug && isResources);
+    html += `<li class="item ${rActive?'active':''}">
+      <a href="#/${m.slug}/resources" aria-current="${rActive?'page':'false'}">Resources</a>
+      <span class="badge">Links</span>
+    </li></ul>`;
+  });
+  sidebar.innerHTML = html;
+}
+function renderHome(){
+  main.innerHTML = `
+    <div class="home-hero">
+      <h2 style="margin:14px 0 6px">Welcome to ${BRAND.course}</h2>
+      <p class="muted">Modules 1 & 2 include full inline lesson notes. Module 3 notes are split by lesson. Bonus Module 2 resources are embedded inline. Module 4 adds mindset lessons.</p>
+      <div class="row">
+        <a class="btn" href="#/${MODULES[0].slug}/lesson/${MODULES[0].lessons[0].n}">Start Module 1</a>
+        <a class="btn secondary" href="#/${MODULES[1].slug}/lesson/${MODULES[1].lessons[0].n}">Go to Module 2</a>
+        <a class="btn secondary" href="#/${MODULES[2].slug}/lesson/${MODULES[2].lessons[0].n}">Explore Module 3</a>
+        <a class="btn secondary" href="#/${MODULES[3].slug}/lesson/${MODULES[3].lessons[0].n}">Open Module 4</a>
+      </div>
+    </div>`;
+}
+function renderLesson(mod, n){
+  const l = mod.lessons.find(x=>x.n===n);
+  if(!l){ main.innerHTML = `<div class="card"><p>Lesson not found.</p></div>`; return; }
+  setViewed(mod.slug,n);
+  const notesKey = `${mod.slug}:${n}`;
+  const notesText = NOTES[notesKey] || "";
+  const src = l.video ? l.video + (l.video.includes('?')?'&':'?') + 'v=' + encodeURIComponent(VERSION) : "";
+  const idx = mod.lessons.findIndex(x=>x.n===n);
+  const hasPrev = idx>0;
+  const hasNext = idx < mod.lessons.length-1;
+  const videoBlock = l.video
+    ? `<iframe src="${src}" allow="autoplay; fullscreen" allowfullscreen></iframe>`
+    : `<div class="notes" style="background:#0b1626">
+         <h3>No video for ${l.code} — ${l.title}</h3>
+         <p class="muted">This lesson is notes-only. See the Lesson Notes below.</p>
+       </div>`;
+  // Extra row under video (e.g., open-in-drive link for 1.3)
+  const underVideoRow = l.link
+    ? `<div class="row"><a class="btn secondary" href="${l.link}" target="_blank" rel="noopener">Open in Google Drive</a></div>`
+    : "";
+  // After all Module 2 videos, show inline resource embeds
+  let extras = "";
+  if (mod.slug === "module-2" && idx === mod.lessons.length - 1) {
+    const e = mod.embeds || {};
+    extras = `
+      <div class="card" style="margin-top:18px">
+        <div class="title">Module 2 — Resources (Inline)</div>
+        <div class="notes"><strong>Module 2 (Inline Preview)</strong></div>
+        <div class="embed"><iframe src="${e.module2DocPreview || ''}" style="width:100%;height:600px;border:0;border-radius:12px;background:#0a1220"></iframe></div>
+        <div class="row" style="margin-top:10px"><a class="btn" href="https://docs.google.com/document/d/1N2cF0koxcq_0ctL5U_IwLVoHmAXAj8sq5ziKWDiU72I/export?format=pdf" target="_blank" rel="noopener">Download Module 2 (PDF)</a></div>
+        <div class="notes" style="margin-top:16px"><strong>Module 2 — The Weight Loss Journey & Summary (Inline Preview)</strong></div>
+        <div class="embed"><iframe src="${e.module2SummaryPreview || ''}" style="width:100%;height:600px;border:0;border-radius:12px;background:#0a1220"></iframe></div>
+        <div class="row" style="margin-top:10px"><a class="btn" href="https://docs.google.com/document/d/16zDnyIXyD5rh5ESMlK-Xq26AQ56EYOWoRiCf8C1NfQQ/export?format=pdf" target="_blank" rel="noopener">Download Summary (PDF)</a></div>
+        <div class="notes" style="margin-top:16px"><strong>Weight Loss Tracker — Week 1 & 2</strong></div>
+        <div class="embed"><iframe src="${e.trackerPreview || ''}" style="width:100%;height:600px;border:0;border-radius:12px;background:#0a1220"></iframe></div>
+        <div class="row" style="margin-top:10px"><a class="btn" href="https://drive.google.com/uc?export=download&id=1hGeepb7agF6KglJgXnS_GbLtoRoSomq6" target="_blank" rel="noopener">Download Tracker (PDF)</a></div>
+      </div>`;
+  }
+  main.innerHTML = `
+    <div class="card">
+      <div class="title">${mod.title} · ${l.code}: ${l.title}</div>
+      ${videoBlock}
+      ${underVideoRow}
+      <div class="notes">
+        <h3>Lesson Notes</h3>
+        ${notesText ? `<div>${escapeHtml(notesText).replace(/\n/g,'<br/>')}</div>` : `<div class="muted">No inline notes yet.</div>`}
+      </div>
+      <div class="pager">
+        <button class="btn secondary" ${hasPrev?'':'disabled'} onclick="goPrev('${mod.slug}', ${n})">◀ Prev</button>
+        <button class="btn" ${hasNext?'':'disabled'} onclick="goNext('${mod.slug}', ${n})">Next ▶</button>
+      </div>
+    </div>
+    ${extras}`;
+  renderSidebar(mod.slug,n,false);
+}
+function renderResources(mod){
+  const links = (mod.resources||[]).filter(r=>r.url).map(r=>`<a class="chip" href="${r.url}" target="_blank" rel="noopener">${r.label}</a>`).join("");
+  let extraBlock = "";
+  if(mod.slug === "module-1"){
+    extraBlock = `
+      <div class="card recap-card">
+        <div class="title">Module 1 Recap</div>
+        <div class="notes">${escapeHtml(MODULE1_RECAP_TEXT).replace(/\n/g,'<br/>')}</div>
+        <div class="row" style="margin-top:12px">
+          <a class="btn" href="https://docs.google.com/document/d/1RKctMkeo3XzEeuXeISGByOPZFGrwPQ0LBuwN5SlXzFs/export?format=pdf" target="_blank" rel="noopener">Download Recap (PDF)</a>
+        </div>
+      </div>`;
+  }
+  if(mod.slug === "module-2"){
+    const e = mod.embeds || {};
+    extraBlock = `
+      <div class="card recap-card">
+        <div class="title">Module 2 — Inline Resources</div>
+        <div class="notes"><strong>Module 2 (Doc Preview)</strong></div>
+        <div class="embed"><iframe src="${e.module2DocPreview || ''}" style="width:100%;height:520px;border:0;border-radius:12px;background:#0a1220"></iframe></div>
+        <div class="notes" style="margin-top:16px"><strong>The Weight Loss Journey & Summary (Doc Preview)</strong></div>
+        <div class="embed"><iframe src="${e.module2SummaryPreview || ''}" style="width:100%;height:520px;border:0;border-radius:12px;background:#0a1220"></iframe></div>
+        <div class="notes" style="margin-top:16px"><strong>Weight Loss Tracker — Week 1 & 2 (PDF Preview)</strong></div>
+        <div class="embed"><iframe src="${e.trackerPreview || ''}" style="width:100%;height:520px;border:0;border-radius:12px;background:#0a1220"></iframe></div>
+      </div>`;
+  }
+  if(mod.slug === "module-3"){
+    const e = mod.embeds || {};
+    extraBlock = `
+      <div class="card recap-card">
+        <div class="title">Module 3 — Guide (Doc Preview)</div>
+        <div class="embed"><iframe src="${e.module3DocPreview || ''}" style="width:100%;height:600px;border:0;border-radius:12px;background:#0a1220"></iframe></div>
+        <div class="row" style="margin-top:10px">
+          <a class="btn" href="https://docs.google.com/document/d/185Nd6jKJagWmtiDn3m2CvVQ3PMJuUd6AM54wlJAF_10/export?format=pdf" target="_blank" rel="noopener">Download Module 3 (PDF)</a>
+        </div>
+      </div>`;
+  }
+  if(mod.slug === "module-4"){
+    const e = mod.embeds || {};
+    extraBlock = `
+      <div class="card recap-card">
+        <div class="title">Module 4 — Psychology Guide (Doc Preview)</div>
+        <div class="embed"><iframe src="${e.module4DocPreview || ''}" style="width:100%;height:560px;border:0;border-radius:12px;background:#0a1220"></iframe></div>
+        <div class="notes" style="margin-top:16px"><strong>Smart Goal Map (PDF Preview)</strong></div>
+        <div class="embed"><iframe src="${e.smartGoalPreview || ''}" style="width:100%;height:560px;border:0;border-radius:12px;background:#0a1220"></iframe></div>
+      </div>`;
+  }
+  main.innerHTML = `<div class="card"><div class="title">${mod.title} · Resources</div>${links || '<p class="muted">No other resource links.</p>'}</div>${extraBlock}`;
+  renderSidebar(mod.slug,-1,true);
+}
+function goPrev(slug,n){
+  const mod = MODULES.find(m=>m.slug===slug); if(!mod) return;
+  const idx = mod.lessons.findIndex(x=>x.n===n);
+  if(idx>0){ location.hash = `#/${slug}/lesson/${mod.lessons[idx-1].n}`; }
+}
+function goNext(slug,n){
+  const mod = MODULES.find(m=>m.slug===slug); if(!mod) return;
+  const idx = mod.lessons.findIndex(x=>x.n===n);
+  if(idx < mod.lessons.length-1){ location.hash = `#/${slug}/lesson/${mod.lessons[idx+1].n}`; }
+}
+function route(){
+  gateIfNeeded();
+  const parts = location.hash.slice(1).split('/').filter(Boolean);
+  if(parts.length===0){ renderSidebar("",-1,false); renderHome(); return; }
+  const slug = parts[0], mod = MODULES.find(m=>m.slug===slug);
+  if(!mod){ renderHome(); return; }
+  if(parts[1]==="lesson"){ const num = Number(parts[2]||"1"); renderLesson(mod, isNaN(num)?1:num); return; }
+  if(parts[1]==="resources"){ renderResources(mod); return; }
+  renderLesson(mod,(mod.lessons[0]?.n||1));
+}
+function escapeHtml(s){ return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m])); }
+window.addEventListener('hashchange', route);
+window.addEventListener('load', route);
+</script>
+</body>
+</html>
