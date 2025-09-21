@@ -1,0 +1,659 @@
+You are a site generator. Create a static, single-page course site with hash-based routing (e.g., /#/lesson/1) and a left sidebar “content ladder.” Do not upload large media into the repo; embed videos and link docs by URL. Keep the bundle lightweight (plain HTML/CSS/JS is fine).
+
+Brand & Layout
+
+Title/brand (top left of sidebar): Client Journey Mastery — Module 1
+
+Left sidebar lists lessons 01–05. Active lesson shows highlighted state.
+
+Main pane shows: H1 title → video player → “Download Worksheet” button(s) → Next/Prev buttons.
+
+Theme: dark, clean, high contrast, large readable text, mobile friendly.
+
+Store a “viewed” status per lesson in localStorage and show a ✅ in the sidebar for lessons the user has opened.
+
+Behavior
+
+Routing: single page app with hash routes: /#/lesson/1…/#/lesson/5, plus /#/resources.
+
+Videos: each lesson embeds a Google Drive preview (iframe) using the /preview URL format.
+
+Docs: open worksheet links in a new tab (target="_blank").
+
+Prev/Next buttons move between lessons. On the last lesson, “Next” is disabled.
+
+Optional access code: scaffold a simple access code check (front-end only). If ACCESS_CODE is empty, skip the gate.
+
+Data (use exactly these titles, videos, and documents)
+
+Note: Convert each “file/view” Drive link to /preview for the iframe source.
+Pattern: https://drive.google.com/file/d/FILE_ID/preview
+
+Module title: Fat Loss Fundamentals (Module 1)
+
+Lessons (01–05):
+
+Basal Metabolic Rate & Energy Expenditure
+Video (Drive preview): https://drive.google.com/file/d/10kpjrXhvW91Ea2z4Z6Onu9NfiU2EIlWa/preview
+
+Worksheet: https://docs.google.com/document/d/1-AaCUxmN-vp5rrmdhctpm2-0YfkkP2ytuYJDz39eoYA/edit?usp=drive_link
+
+Why Do We Gain Fat?
+Video (Drive preview): https://drive.google.com/file/d/1Y103LdQxY2QnUEavk91XK6ec15mR0iPp/preview
+
+Worksheet: https://docs.google.com/document/d/1nuZcMARA8P1cnbASn_tgOqasA8GLQ1rAROs3TgXQlbU/edit?usp=drive_link
+
+How Do We Lose Fat?
+Video (Drive preview): https://drive.google.com/file/d/1GeN_yq_ol9jEUUvGySxodtAvi9_6d-Kr/preview
+
+Worksheet: https://docs.google.com/document/d/1FLkHVFVAnH9lbIa_s1haaX8NnCqAcla9b7wvyzm7mBY/edit?usp=drive_link
+
+Fat-Loss Exercise
+Video (Drive preview): https://drive.google.com/file/d/1HM2S5LpXZ5_7dqeM_Osa3z1moxLyFLuU/preview
+
+Worksheet: https://docs.google.com/document/d/1GLJ11aNGHGDFRltm3RpXVBNLtDD44RsupFeEh6lzR_4/edit?usp=drive_link
+
+What Hinders Fat Loss
+Video (Drive preview): https://drive.google.com/file/d/1YhhE0UIACQOPf0lzF1NevQj-W9142eIq/preview
+
+Worksheet: https://docs.google.com/document/d/1l1DL2KOUqq2GXAyB2COaUwF7s_UIhWnlzw9qb37COA8/edit?usp=drive_link
+
+Additional resources page (add to bottom of sidebar as “Resources”):
+
+Resource A: https://docs.google.com/document/d/1rT_sQEOkcQqUXEzcIK7jBmK_yN0ZaqSxS7s1fFSghdc/edit?usp=drive_link
+
+Resource B: https://docs.google.com/document/d/1RKctMkeo3XzEeuXeISGByOPZFGrwPQ0LBuwN5SlXzFs/edit?usp=drive_link
+
+Implementation Notes
+
+Data source: hardcode a small JS object like:
+
+const ACCESS_CODE = ""; // set non-empty to enable gate
+const LESSONS = [
+  { n:1, title:"Basal Metabolic Rate & Energy Expenditure",
+    video:"https://drive.google.com/file/d/10kpjrXhvW91Ea2z4Z6Onu9NfiU2EIlWa/preview",
+    docs:[{label:"Worksheet", url:"https://docs.google.com/document/d/1-AaCUxmN-vp5rrmdhctpm2-0YfkkP2ytuYJDz39eoYA/edit?usp=drive_link"}]
+  },
+  { n:2, title:"Why Do We Gain Fat?",
+    video:"https://drive.google.com/file/d/1Y103LdQxY2QnUEavk91XK6ec15mR0iPp/preview",
+    docs:[{label:"Worksheet", url:"https://docs.google.com/document/d/1nuZcMARA8P1cnbASn_tgOqasA8GLQ1rAROs3TgXQlbU/edit?usp=drive_link"}]
+  },
+  { n:3, title:"How Do We Lose Fat?",
+    video:"https://drive.google.com/file/d/1GeN_yq_ol9jEUUvGySxodtAvi9_6d-Kr/preview",
+    docs:[{label:"Worksheet", url:"https://docs.google.com/document/d/1FLkHVFVAnH9lbIa_s1haaX8NnCqAcla9b7wvyzm7mBY/edit?usp=drive_link"}]
+  },
+  { n:4, title:"Fat-Loss Exercise",
+    video:"https://drive.google.com/file/d/1HM2S5LpXZ5_7dqeM_Osa3z1moxLyFLuU/preview",
+    docs:[{label:"Worksheet", url:"https://docs.google.com/document/d/1GLJ11aNGHGDFRltm3RpXVBNLtDD44RsupFeEh6lzR_4/edit?usp=drive_link"}]
+  },
+  { n:5, title:"What Hinders Fat Loss",
+    video:"https://drive.google.com/file/d/1YhhE0UIACQOPf0lzF1NevQj-W9142eIq/preview",
+    docs:[{label:"Worksheet", url:"https://docs.google.com/document/d/1l1DL2KOUqq2GXAyB2COaUwF7s_UIhWnlzw9qb37COA8/edit?usp=drive_link"}]
+  },
+];
+const EXTRA_DOCS = [
+  {label:"Resource A", url:"https://docs.google.com/document/d/1rT_sQEOkcQqUXEzcIK7jBmK_yN0ZaqSxS7s1fFSghdc/edit?usp=drive_link"},
+  {label:"Resource B", url:"https://docs.google.com/document/d/1RKctMkeo3XzEeuXeISGByOPZFGrwPQ0LBuwN5SlXzFs/edit?usp=drive_link"},
+];
+
+
+Video embed: use <iframe src=".../preview" allow="autoplay; fullscreen" allowfullscreen></iframe>.
+
+Progress ticks: when a lesson route is opened, set localStorage.setItem('m1_viewed_'+n, '1'). On render, show ✅ for any lesson with this flag.
+
+Accessibility: keyboard focus styles, sufficient color contrast, and aria-current="page" on the active lesson link.
+
+Deliverables
+
+A single static site (index.html + CSS + JS) or a Hugging Face Space (Static) project with the above behavior.
+
+Clear README with instructions to change ACCESS_CODE and how to add Module 2 later by extending the same data structure.
+You are a site generator. Build a static, single-page course site for Planted in Nutrition — Weight & Fat Loss: 101 with a left sidebar “content ladder.”
+Do not upload large media; embed Google Drive /preview videos and open docs in new tabs.
+
+Brand & layout
+
+Brand/author: Planted in Nutrition — Julie Wallace, RDN, LD
+
+Course title: Weight & Fat Loss: 101
+
+Look & feel: sleek dark theme, modern cards, large readable type, keyboard accessible (focus rings, aria-current on active item), responsive/mobile friendly
+
+Top-right CTA (optional): “Buy All-Access” → PAY_LINK_ALL (hide if empty)
+
+Simple access gate
+
+Use ACCESS_CODE = "JulieOffer". Prompt once, store pass in localStorage key access_ok=1. If not present, block content.
+
+Routing
+
+Home: /#/ (title + short intro and CTA if PAY_LINK_ALL is set)
+
+Modules & lessons:
+
+Module 1: /#/module-1/lesson/1 … /5, /#/module-1/resources
+
+Module 2: /#/module-2/lesson/0 (overview), /#/module-2/lesson/1 … /10, /#/module-2/resources
+
+Module 3: /#/module-3/lesson/1 … /4, /#/module-3/resources
+
+Module 4: /#/module-4/lesson/1 … /9, /#/module-4/resources
+
+Each lesson: H1 → embedded video (iframe) → “Download” buttons → Prev/Next (disabled at ends)
+
+Show ✅ next to a lesson in the sidebar once visited; persist via localStorage.setItem('viewed:<slug>:<n>','1')
+
+Data (use EXACTLY this object; keep /preview in video URLs)
+// Site toggles
+const ACCESS_CODE    = "JulieOffer";
+const PAY_LINK_ALL   = "";     // add Stripe Payment Link later
+const HERO_IMAGE_URL = "";     // optional hero/banner
+
+// Course content
+const MODULES = [
+  // =========================
+  // MODULE 1 — Fat Loss Fundamentals
+  // =========================
+  {
+    slug: "module-1",
+    title: "Fat Loss Fundamentals",
+    lessons: [
+      {
+        n: 1,
+        title: "Basal Metabolic Rate & Energy Expenditure",
+        video: "https://drive.google.com/file/d/10kpjrXhvW91Ea2z4Z6Onu9NfiU2EIlWa/preview",
+        docs: [
+          { label: "Worksheet", url: "https://docs.google.com/document/d/1-AaCUxmN-vp5rrmdhctpm2-0YfkkP2ytuYJDz39eoYA/edit?usp=drive_link" }
+        ]
+      },
+      {
+        n: 2,
+        title: "Why Do We Gain Fat?",
+        video: "https://drive.google.com/file/d/1Y103LdQxY2QnUEavk91XK6ec15mR0iPp/preview",
+        docs: [
+          { label: "Worksheet", url: "https://docs.google.com/document/d/1nuZcMARA8P1cnbASn_tgOqasA8GLQ1rAROs3TgXQlbU/edit?usp=drive_link" }
+        ]
+      },
+      {
+        n: 3,
+        title: "How Do We Lose Fat?",
+        video: "https://drive.google.com/file/d/1GeN_yq_ol9jEUUvGySxodtAvi9_6d-Kr/preview",
+        docs: [
+          { label: "Worksheet", url: "https://docs.google.com/document/d/1FLkHVFVAnH9lbIa_s1haaX8NnCqAcla9b7wvyzm7mBY/edit?usp=drive_link" }
+        ]
+      },
+      {
+        n: 4,
+        title: "Fat Loss & Exercise",
+        video: "https://drive.google.com/file/d/1HM2S5LpXZ5_7dqeM_Osa3z1moxLyFLuU/preview",
+        docs: [
+          { label: "Worksheet", url: "https://docs.google.com/document/d/1GLJ11aNGHGDFRltm3RpXVBNLtDD44RsupFeEh6lzR_4/edit?usp=drive_link" }
+        ]
+      },
+      {
+        n: 5,
+        title: "What Hinders Fat Loss?",
+        video: "https://drive.google.com/file/d/1YhhE0UIACQOPf0lzF1NevQj-W9142eIq/preview",
+        docs: [
+          { label: "Worksheet", url: "https://docs.google.com/document/d/1l1DL2KOUqq2GXAyB2COaUwF7s_UIhWnlzw9qb37COA8/edit?usp=drive_link" }
+        ]
+      }
+    ],
+    resources: [
+      // Optional recap doc goes here later, if desired
+    ]
+  },
+
+  // =========================
+  // MODULE 2 — The Weight Loss Journey (Nutrition)
+  // =========================
+  {
+    slug: "module-2",
+    title: "The Weight Loss Journey",
+    overview: {
+      title: "Module 2 Overview — The Weight Loss Journey",
+      video: "https://drive.google.com/file/d/1hGeepb7agF6KglJgXnS_GbLtoRoSomq6/preview"
+    },
+    // Mapped in the order the links were provided (excluding docs & the overview)
+    lessons: [
+      { n: 1,  title: "Calculating Your TDEE",               video: "https://drive.google.com/file/d/18Cbu7UKsNZ_GTLRVosuAzCYRJ2-zNjPQ/preview", docs: [] },
+      { n: 2,  title: "Creating The Deficit",                 video: "https://drive.google.com/file/d/1G5IgLa_Zhv4aA8aA8DR2H2FmL3vTCeFL/preview", docs: [] },
+      { n: 3,  title: "Setting Protein Targets",              video: "https://drive.google.com/file/d/1GMVFW6smwxavfQChPqGD2WoivkYF63yM/preview", docs: [] },
+      { n: 4,  title: "Setting Fat Targets",                  video: "https://drive.google.com/file/d/1KVQpMuaTmr9jueULpfBGzZHuwBU29fd1/preview", docs: [] },
+      { n: 5,  title: "Setting Carbohydrate Targets",         video: "https://drive.google.com/file/d/1NgvNan3IszlGH6Uzz031dhVNL2BAqnCH/preview", docs: [] },
+      { n: 6,  title: "What About Micronutrients?",           video: "https://drive.google.com/file/d/1TkciiodLJal7ABLtoVD2Ob-xkN5sgUD-/preview", docs: [] },
+      { n: 7,  title: "Food Choices",                         video: "https://drive.google.com/file/d/1WPzkt59uOLo-JUrtzx-ia9g5STWn3JoG/preview", docs: [] },
+      { n: 8,  title: "Adjusting The Variables",              video: "https://drive.google.com/file/d/1dh1aP3xuwGXXxSsEn6MOpVCLJ4CjK1q3/preview", docs: [] },
+      { n: 9,  title: "Meal Prepping",                        video: "https://drive.google.com/file/d/1mz8ThZ7ifCGI-sKh-I5Z3WCxeTaxunEs/preview", docs: [] },
+      { n: 10, title: "Frequently Asked Questions",           video: "https://drive.google.com/file/d/1oLBMtqpotfNPBttzbKK9IUhIhuR_TAj8/preview", docs: [] }
+    ],
+    resources: [
+      { label: "Macro and Calorie Worksheet (Doc)", url: "https://docs.google.com/document/d/16zDnyIXyD5rh5ESMlK-Xq26AQ56EYOWoRiCf8C1NfQQ/edit?usp=sharing" },
+      { label: "Module 2 — The Weight Loss Journey & Summary (Doc)", url: "https://docs.google.com/document/d/1N2cF0koxcq_0ctL5U_IwLVoHmAXAj8sq5ziKWDiU72I/edit?usp=sharing" },
+      // If you want to add the Tracker PDF, replace the placeholder below with its Drive link:
+      // { label: "Weight Loss Tracker — Week 1 & 2 (PDF)", url: "REPLACE_WITH_TRACKER_PDF" }
+    ]
+  },
+
+  // =========================
+  // MODULE 3 — Weight Loss Exercise
+  // =========================
+  {
+    slug: "module-3",
+    title: "Weight Loss Exercise",
+    lessons: [
+      { n: 1, title: "Types of Training",               video: "https://drive.google.com/file/d/10GHeHaISOFyt185TWmOeo3hKCaH7_mFf/preview", docs: [] },
+      { n: 2, title: "What’s Best for Weight Loss?",    video: "https://drive.google.com/file/d/10VZQhKiPjjpN4tH2M7lMzGwa7p5eBNg6/preview", docs: [] },
+      { n: 3, title: "Training Frequency",              video: "https://drive.google.com/file/d/1QIsTiQMOz9Dgrxp9kl2C3ogy2FxLCFaw/preview", docs: [] },
+      { n: 4, title: "What Is an Effective Workout?",   video: "https://drive.google.com/file/d/1uc2MBEMYyuj-NgoU_4zVc6FTq_fNpQuj/preview", docs: [] }
+    ],
+    resources: [
+      { label: "Module 3 — Weight Loss Exercise (notes)", url: "https://docs.google.com/document/d/185Nd6jKJagWmtiDn3m2CvVQ3PMJuUd6AM54wlJAF_10/edit?usp=sharing" }
+    ]
+  },
+
+  // =========================
+  // MODULE 4 — The Psychology of Weight Loss (titles can be refined later)
+  // =========================
+  {
+    slug: "module-4",
+    title: "The Psychology of Weight Loss",
+    lessons: [
+      { n: 1, title: "Lesson 1", video: "https://drive.google.com/file/d/15-K6cUCMehiCXCN0z-Fhncc8NOgCMsmk/preview", docs: [] },
+      { n: 2, title: "Lesson 2", video: "https://drive.google.com/file/d/1EZC70P7628MayYCyi12SSXQ4gkSeQ9T2/preview", docs: [] },
+      { n: 3, title: "Lesson 3", video: "https://drive.google.com/file/d/1GKRVLvo66lbiBEs4JKP3zD6LllHn0OE-/preview", docs: [] },
+      { n: 4, title: "Lesson 4", video: "https://drive.google.com/file/d/1KQ9gdXxEPK6pXV1piVE7M_-F9wp014Tu/preview", docs: [] },
+      { n: 5, title: "Lesson 5", video: "https://drive.google.com/file/d/1KsJLSCyFvNITp5nZgrUFP5IIrcWmmZ3S/preview", docs: [] },
+      { n: 6, title: "Lesson 6", video: "https://drive.google.com/file/d/1TqjoeQVdKZm1Gshuzw25yQImge8uDWoh/preview", docs: [] },
+      { n: 7, title: "Lesson 7", video: "https://drive.google.com/file/d/1d5sPCk1AjXOLKMfJG1GKnjN5QtQl8AkD/preview", docs: [] },
+      { n: 8, title: "Lesson 8", video: "https://drive.google.com/file/d/1oo1GI1v4KZ_ygABi_ojPAmY2Fz83Ev2X/preview", docs: [] },
+      { n: 9, title: "Lesson 9", video: "https://drive.google.com/file/d/1yDTSMZZTtw0F7n1KPoMnauIo4CDmaHk6/preview", docs: [] }
+    ],
+    resources: [
+      { label: "Module 4 Worksheet / Notes", url: "https://docs.google.com/document/d/143URPjJLJ79w2C_mZB8AOXHsWjh0wzUGXbXnLxCR3-U/edit?usp=sharing" }
+    ]
+  }
+];
+
+Implementation rules
+
+Embed videos with:
+
+<iframe src="DRIVE_PREVIEW_URL" allow="autoplay; fullscreen" allowfullscreen></iframe>
+
+
+Docs render as buttons opening in a new tab (target="_blank" rel="noopener").
+
+Progress ticks: show ✅ in sidebar when localStorage['viewed:<slug>:<n>'] === '1'.
+
+Prev/Next: navigate within the current module; from Module-2 overview (n=0), “Next” goes to lesson 1.
+
+SEO: <title>Weight & Fat Loss: 101 — <Module Title> — Lesson <n>: <Lesson Title></title>.
+
+README: include how to update MODULES, convert Drive /view→/preview, change ACCESS_CODE, and add PAY_LINK_ALL.
+You are a site generator. Build a static, single-page course site for Planted in Nutrition — Weight & Fat Loss: 101 with a left sidebar “content ladder.”
+Do not upload large media; embed Google Drive /preview videos and open docs in new tabs.
+
+Brand & layout
+
+Brand/author: Planted in Nutrition — Julie Wallace, RDN, LD
+
+Course title: Weight & Fat Loss: 101
+
+Look & feel: sleek dark theme, modern cards, large readable type, keyboard accessible (focus rings, aria-current on active item), responsive/mobile friendly
+
+Top-right CTA (optional): “Buy All-Access” → PAY_LINK_ALL (hide if empty)
+
+Simple access gate
+
+Use ACCESS_CODE = "JulieOffer". Prompt once, store pass in localStorage key access_ok=1. If not present, block content.
+
+Routing
+
+Home: /#/ (title + short intro and CTA if PAY_LINK_ALL is set)
+
+Modules & lessons:
+
+Module 1: /#/module-1/lesson/1 … /5, /#/module-1/resources
+
+Module 2: /#/module-2/lesson/0 (overview), /#/module-2/lesson/1 … /10, /#/module-2/resources
+
+Module 3: /#/module-3/lesson/1 … /4, /#/module-3/resources
+
+Module 4: /#/module-4/lesson/1 … /9, /#/module-4/resources
+
+Each lesson: H1 → embedded video (iframe) → “Download” buttons → Prev/Next (disabled at ends)
+
+Show ✅ next to a lesson in the sidebar once visited; persist via localStorage.setItem('viewed:<slug>:<n>','1')
+
+Data (use EXACTLY this object; keep /preview in video URLs)
+// Site toggles
+const ACCESS_CODE    = "JulieOffer";
+const PAY_LINK_ALL   = "";     // add Stripe Payment Link later
+const HERO_IMAGE_URL = "";     // optional hero/banner
+
+// Course content
+const MODULES = [
+  // =========================
+  // MODULE 1 — Fat Loss Fundamentals
+  // =========================
+  {
+    slug: "module-1",
+    title: "Fat Loss Fundamentals",
+    lessons: [
+      {
+        n: 1,
+        title: "Basal Metabolic Rate & Energy Expenditure",
+        video: "https://drive.google.com/file/d/10kpjrXhvW91Ea2z4Z6Onu9NfiU2EIlWa/preview",
+        docs: [
+          { label: "Worksheet", url: "https://docs.google.com/document/d/1-AaCUxmN-vp5rrmdhctpm2-0YfkkP2ytuYJDz39eoYA/edit?usp=drive_link" }
+        ]
+      },
+      {
+        n: 2,
+        title: "Why Do We Gain Fat?",
+        video: "https://drive.google.com/file/d/1Y103LdQxY2QnUEavk91XK6ec15mR0iPp/preview",
+        docs: [
+          { label: "Worksheet", url: "https://docs.google.com/document/d/1nuZcMARA8P1cnbASn_tgOqasA8GLQ1rAROs3TgXQlbU/edit?usp=drive_link" }
+        ]
+      },
+      {
+        n: 3,
+        title: "How Do We Lose Fat?",
+        video: "https://drive.google.com/file/d/1GeN_yq_ol9jEUUvGySxodtAvi9_6d-Kr/preview",
+        docs: [
+          { label: "Worksheet", url: "https://docs.google.com/document/d/1FLkHVFVAnH9lbIa_s1haaX8NnCqAcla9b7wvyzm7mBY/edit?usp=drive_link" }
+        ]
+      },
+      {
+        n: 4,
+        title: "Fat Loss & Exercise",
+        video: "https://drive.google.com/file/d/1HM2S5LpXZ5_7dqeM_Osa3z1moxLyFLuU/preview",
+        docs: [
+          { label: "Worksheet", url: "https://docs.google.com/document/d/1GLJ11aNGHGDFRltm3RpXVBNLtDD44RsupFeEh6lzR_4/edit?usp=drive_link" }
+        ]
+      },
+      {
+        n: 5,
+        title: "What Hinders Fat Loss?",
+        video: "https://drive.google.com/file/d/1YhhE0UIACQOPf0lzF1NevQj-W9142eIq/preview",
+        docs: [
+          { label: "Worksheet", url: "https://docs.google.com/document/d/1l1DL2KOUqq2GXAyB2COaUwF7s_UIhWnlzw9qb37COA8/edit?usp=drive_link" }
+        ]
+      }
+    ],
+    resources: [
+      // Optional recap doc goes here later, if desired
+    ]
+  },
+
+  // =========================
+  // MODULE 2 — The Weight Loss Journey (Nutrition)
+  // =========================
+  {
+    slug: "module-2",
+    title: "The Weight Loss Journey",
+    overview: {
+      title: "Module 2 Overview — The Weight Loss Journey",
+      video: "https://drive.google.com/file/d/1hGeepb7agF6KglJgXnS_GbLtoRoSomq6/preview"
+    },
+    // Mapped in the order the links were provided (excluding docs & the overview)
+    lessons: [
+      { n: 1,  title: "Calculating Your TDEE",               video: "https://drive.google.com/file/d/18Cbu7UKsNZ_GTLRVosuAzCYRJ2-zNjPQ/preview", docs: [] },
+      { n: 2,  title: "Creating The Deficit",                 video: "https://drive.google.com/file/d/1G5IgLa_Zhv4aA8aA8DR2H2FmL3vTCeFL/preview", docs: [] },
+      { n: 3,  title: "Setting Protein Targets",              video: "https://drive.google.com/file/d/1GMVFW6smwxavfQChPqGD2WoivkYF63yM/preview", docs: [] },
+      { n: 4,  title: "Setting Fat Targets",                  video: "https://drive.google.com/file/d/1KVQpMuaTmr9jueULpfBGzZHuwBU29fd1/preview", docs: [] },
+      { n: 5,  title: "Setting Carbohydrate Targets",         video: "https://drive.google.com/file/d/1NgvNan3IszlGH6Uzz031dhVNL2BAqnCH/preview", docs: [] },
+      { n: 6,  title: "What About Micronutrients?",           video: "https://drive.google.com/file/d/1TkciiodLJal7ABLtoVD2Ob-xkN5sgUD-/preview", docs: [] },
+      { n: 7,  title: "Food Choices",                         video: "https://drive.google.com/file/d/1WPzkt59uOLo-JUrtzx-ia9g5STWn3JoG/preview", docs: [] },
+      { n: 8,  title: "Adjusting The Variables",              video: "https://drive.google.com/file/d/1dh1aP3xuwGXXxSsEn6MOpVCLJ4CjK1q3/preview", docs: [] },
+      { n: 9,  title: "Meal Prepping",                        video: "https://drive.google.com/file/d/1mz8ThZ7ifCGI-sKh-I5Z3WCxeTaxunEs/preview", docs: [] },
+      { n: 10, title: "Frequently Asked Questions",           video: "https://drive.google.com/file/d/1oLBMtqpotfNPBttzbKK9IUhIhuR_TAj8/preview", docs: [] }
+    ],
+    resources: [
+      { label: "Macro and Calorie Worksheet (Doc)", url: "https://docs.google.com/document/d/16zDnyIXyD5rh5ESMlK-Xq26AQ56EYOWoRiCf8C1NfQQ/edit?usp=sharing" },
+      { label: "Module 2 — The Weight Loss Journey & Summary (Doc)", url: "https://docs.google.com/document/d/1N2cF0koxcq_0ctL5U_IwLVoHmAXAj8sq5ziKWDiU72I/edit?usp=sharing" },
+      // If you want to add the Tracker PDF, replace the placeholder below with its Drive link:
+      // { label: "Weight Loss Tracker — Week 1 & 2 (PDF)", url: "REPLACE_WITH_TRACKER_PDF" }
+    ]
+  },
+
+  // =========================
+  // MODULE 3 — Weight Loss Exercise
+  // =========================
+  {
+    slug: "module-3",
+    title: "Weight Loss Exercise",
+    lessons: [
+      { n: 1, title: "Types of Training",               video: "https://drive.google.com/file/d/10GHeHaISOFyt185TWmOeo3hKCaH7_mFf/preview", docs: [] },
+      { n: 2, title: "What’s Best for Weight Loss?",    video: "https://drive.google.com/file/d/10VZQhKiPjjpN4tH2M7lMzGwa7p5eBNg6/preview", docs: [] },
+      { n: 3, title: "Training Frequency",              video: "https://drive.google.com/file/d/1QIsTiQMOz9Dgrxp9kl2C3ogy2FxLCFaw/preview", docs: [] },
+      { n: 4, title: "What Is an Effective Workout?",   video: "https://drive.google.com/file/d/1uc2MBEMYyuj-NgoU_4zVc6FTq_fNpQuj/preview", docs: [] }
+    ],
+    resources: [
+      { label: "Module 3 — Weight Loss Exercise (notes)", url: "https://docs.google.com/document/d/185Nd6jKJagWmtiDn3m2CvVQ3PMJuUd6AM54wlJAF_10/edit?usp=sharing" }
+    ]
+  },
+
+  // =========================
+  // MODULE 4 — The Psychology of Weight Loss (titles can be refined later)
+  // =========================
+  {
+    slug: "module-4",
+    title: "The Psychology of Weight Loss",
+    lessons: [
+      { n: 1, title: "Lesson 1", video: "https://drive.google.com/file/d/15-K6cUCMehiCXCN0z-Fhncc8NOgCMsmk/preview", docs: [] },
+      { n: 2, title: "Lesson 2", video: "https://drive.google.com/file/d/1EZC70P7628MayYCyi12SSXQ4gkSeQ9T2/preview", docs: [] },
+      { n: 3, title: "Lesson 3", video: "https://drive.google.com/file/d/1GKRVLvo66lbiBEs4JKP3zD6LllHn0OE-/preview", docs: [] },
+      { n: 4, title: "Lesson 4", video: "https://drive.google.com/file/d/1KQ9gdXxEPK6pXV1piVE7M_-F9wp014Tu/preview", docs: [] },
+      { n: 5, title: "Lesson 5", video: "https://drive.google.com/file/d/1KsJLSCyFvNITp5nZgrUFP5IIrcWmmZ3S/preview", docs: [] },
+      { n: 6, title: "Lesson 6", video: "https://drive.google.com/file/d/1TqjoeQVdKZm1Gshuzw25yQImge8uDWoh/preview", docs: [] },
+      { n: 7, title: "Lesson 7", video: "https://drive.google.com/file/d/1d5sPCk1AjXOLKMfJG1GKnjN5QtQl8AkD/preview", docs: [] },
+      { n: 8, title: "Lesson 8", video: "https://drive.google.com/file/d/1oo1GI1v4KZ_ygABi_ojPAmY2Fz83Ev2X/preview", docs: [] },
+      { n: 9, title: "Lesson 9", video: "https://drive.google.com/file/d/1yDTSMZZTtw0F7n1KPoMnauIo4CDmaHk6/preview", docs: [] }
+    ],
+    resources: [
+      { label: "Module 4 Worksheet / Notes", url: "https://docs.google.com/document/d/143URPjJLJ79w2C_mZB8AOXHsWjh0wzUGXbXnLxCR3-U/edit?usp=sharing" }
+    ]
+  }
+];
+
+Implementation rules
+
+Embed videos with:
+
+<iframe src="DRIVE_PREVIEW_URL" allow="autoplay; fullscreen" allowfullscreen></iframe>
+
+
+Docs render as buttons opening in a new tab (target="_blank" rel="noopener").
+
+Progress ticks: show ✅ in sidebar when localStorage['viewed:<slug>:<n>'] === '1'.
+
+Prev/Next: navigate within the current module; from Module-2 overview (n=0), “Next” goes to lesson 1.
+
+SEO: <title>Weight & Fat Loss: 101 — <Module Title> — Lesson <n>: <Lesson Title></title>.
+
+README: include how to update MODULES, convert Drive /view→/preview, change ACCESS_CODE, and add PAY_LINK_ALL.
+You are a site generator. Build a static, single-page course site for Planted in Nutrition — Weight & Fat Loss: 101 with a left sidebar “content ladder.”
+Do not upload large media; embed Google Drive /preview videos and open docs in new tabs.
+
+Brand & layout
+
+Brand/author: Planted in Nutrition — Julie Wallace, RDN, LD
+
+Course title: Weight & Fat Loss: 101
+
+Look & feel: sleek dark theme, modern cards, large readable type, keyboard accessible (focus rings, aria-current on active item), responsive/mobile friendly
+
+Top-right CTA (optional): “Buy All-Access” → PAY_LINK_ALL (hide if empty)
+
+Simple access gate
+
+Use ACCESS_CODE = "JulieOffer". Prompt once, store pass in localStorage key access_ok=1. If not present, block content.
+
+Routing
+
+Home: /#/ (title + short intro and CTA if PAY_LINK_ALL is set)
+
+Modules & lessons:
+
+Module 1: /#/module-1/lesson/1 … /5, /#/module-1/resources
+
+Module 2: /#/module-2/lesson/0 (overview), /#/module-2/lesson/1 … /10, /#/module-2/resources
+
+Module 3: /#/module-3/lesson/1 … /4, /#/module-3/resources
+
+Module 4: /#/module-4/lesson/1 … /9, /#/module-4/resources
+
+Each lesson: H1 → embedded video (iframe) → “Download” buttons → Prev/Next (disabled at ends)
+
+Show ✅ next to a lesson in the sidebar once visited; persist via localStorage.setItem('viewed:<slug>:<n>','1')
+
+Data (use EXACTLY this object; keep /preview in video URLs)
+// Site toggles
+const ACCESS_CODE    = "JulieOffer";
+const PAY_LINK_ALL   = "";     // add Stripe Payment Link later
+const HERO_IMAGE_URL = "";     // optional hero/banner
+
+// Course content
+const MODULES = [
+  // =========================
+  // MODULE 1 — Fat Loss Fundamentals
+  // =========================
+  {
+    slug: "module-1",
+    title: "Fat Loss Fundamentals",
+    lessons: [
+      {
+        n: 1,
+        title: "Basal Metabolic Rate & Energy Expenditure",
+        video: "https://drive.google.com/file/d/10kpjrXhvW91Ea2z4Z6Onu9NfiU2EIlWa/preview",
+        docs: [
+          { label: "Worksheet", url: "https://docs.google.com/document/d/1-AaCUxmN-vp5rrmdhctpm2-0YfkkP2ytuYJDz39eoYA/edit?usp=drive_link" }
+        ]
+      },
+      {
+        n: 2,
+        title: "Why Do We Gain Fat?",
+        video: "https://drive.google.com/file/d/1Y103LdQxY2QnUEavk91XK6ec15mR0iPp/preview",
+        docs: [
+          { label: "Worksheet", url: "https://docs.google.com/document/d/1nuZcMARA8P1cnbASn_tgOqasA8GLQ1rAROs3TgXQlbU/edit?usp=drive_link" }
+        ]
+      },
+      {
+        n: 3,
+        title: "How Do We Lose Fat?",
+        video: "https://drive.google.com/file/d/1GeN_yq_ol9jEUUvGySxodtAvi9_6d-Kr/preview",
+        docs: [
+          { label: "Worksheet", url: "https://docs.google.com/document/d/1FLkHVFVAnH9lbIa_s1haaX8NnCqAcla9b7wvyzm7mBY/edit?usp=drive_link" }
+        ]
+      },
+      {
+        n: 4,
+        title: "Fat Loss & Exercise",
+        video: "https://drive.google.com/file/d/1HM2S5LpXZ5_7dqeM_Osa3z1moxLyFLuU/preview",
+        docs: [
+          { label: "Worksheet", url: "https://docs.google.com/document/d/1GLJ11aNGHGDFRltm3RpXVBNLtDD44RsupFeEh6lzR_4/edit?usp=drive_link" }
+        ]
+      },
+      {
+        n: 5,
+        title: "What Hinders Fat Loss?",
+        video: "https://drive.google.com/file/d/1YhhE0UIACQOPf0lzF1NevQj-W9142eIq/preview",
+        docs: [
+          { label: "Worksheet", url: "https://docs.google.com/document/d/1l1DL2KOUqq2GXAyB2COaUwF7s_UIhWnlzw9qb37COA8/edit?usp=drive_link" }
+        ]
+      }
+    ],
+    resources: [
+      // Optional recap doc goes here later, if desired
+    ]
+  },
+
+  // =========================
+  // MODULE 2 — The Weight Loss Journey (Nutrition)
+  // =========================
+  {
+    slug: "module-2",
+    title: "The Weight Loss Journey",
+    overview: {
+      title: "Module 2 Overview — The Weight Loss Journey",
+      video: "https://drive.google.com/file/d/1hGeepb7agF6KglJgXnS_GbLtoRoSomq6/preview"
+    },
+    // Mapped in the order the links were provided (excluding docs & the overview)
+    lessons: [
+      { n: 1,  title: "Calculating Your TDEE",               video: "https://drive.google.com/file/d/18Cbu7UKsNZ_GTLRVosuAzCYRJ2-zNjPQ/preview", docs: [] },
+      { n: 2,  title: "Creating The Deficit",                 video: "https://drive.google.com/file/d/1G5IgLa_Zhv4aA8aA8DR2H2FmL3vTCeFL/preview", docs: [] },
+      { n: 3,  title: "Setting Protein Targets",              video: "https://drive.google.com/file/d/1GMVFW6smwxavfQChPqGD2WoivkYF63yM/preview", docs: [] },
+      { n: 4,  title: "Setting Fat Targets",                  video: "https://drive.google.com/file/d/1KVQpMuaTmr9jueULpfBGzZHuwBU29fd1/preview", docs: [] },
+      { n: 5,  title: "Setting Carbohydrate Targets",         video: "https://drive.google.com/file/d/1NgvNan3IszlGH6Uzz031dhVNL2BAqnCH/preview", docs: [] },
+      { n: 6,  title: "What About Micronutrients?",           video: "https://drive.google.com/file/d/1TkciiodLJal7ABLtoVD2Ob-xkN5sgUD-/preview", docs: [] },
+      { n: 7,  title: "Food Choices",                         video: "https://drive.google.com/file/d/1WPzkt59uOLo-JUrtzx-ia9g5STWn3JoG/preview", docs: [] },
+      { n: 8,  title: "Adjusting The Variables",              video: "https://drive.google.com/file/d/1dh1aP3xuwGXXxSsEn6MOpVCLJ4CjK1q3/preview", docs: [] },
+      { n: 9,  title: "Meal Prepping",                        video: "https://drive.google.com/file/d/1mz8ThZ7ifCGI-sKh-I5Z3WCxeTaxunEs/preview", docs: [] },
+      { n: 10, title: "Frequently Asked Questions",           video: "https://drive.google.com/file/d/1oLBMtqpotfNPBttzbKK9IUhIhuR_TAj8/preview", docs: [] }
+    ],
+    resources: [
+      { label: "Macro and Calorie Worksheet (Doc)", url: "https://docs.google.com/document/d/16zDnyIXyD5rh5ESMlK-Xq26AQ56EYOWoRiCf8C1NfQQ/edit?usp=sharing" },
+      { label: "Module 2 — The Weight Loss Journey & Summary (Doc)", url: "https://docs.google.com/document/d/1N2cF0koxcq_0ctL5U_IwLVoHmAXAj8sq5ziKWDiU72I/edit?usp=sharing" },
+      // If you want to add the Tracker PDF, replace the placeholder below with its Drive link:
+      // { label: "Weight Loss Tracker — Week 1 & 2 (PDF)", url: "REPLACE_WITH_TRACKER_PDF" }
+    ]
+  },
+
+  // =========================
+  // MODULE 3 — Weight Loss Exercise
+  // =========================
+  {
+    slug: "module-3",
+    title: "Weight Loss Exercise",
+    lessons: [
+      { n: 1, title: "Types of Training",               video: "https://drive.google.com/file/d/10GHeHaISOFyt185TWmOeo3hKCaH7_mFf/preview", docs: [] },
+      { n: 2, title: "What’s Best for Weight Loss?",    video: "https://drive.google.com/file/d/10VZQhKiPjjpN4tH2M7lMzGwa7p5eBNg6/preview", docs: [] },
+      { n: 3, title: "Training Frequency",              video: "https://drive.google.com/file/d/1QIsTiQMOz9Dgrxp9kl2C3ogy2FxLCFaw/preview", docs: [] },
+      { n: 4, title: "What Is an Effective Workout?",   video: "https://drive.google.com/file/d/1uc2MBEMYyuj-NgoU_4zVc6FTq_fNpQuj/preview", docs: [] }
+    ],
+    resources: [
+      { label: "Module 3 — Weight Loss Exercise (notes)", url: "https://docs.google.com/document/d/185Nd6jKJagWmtiDn3m2CvVQ3PMJuUd6AM54wlJAF_10/edit?usp=sharing" }
+    ]
+  },
+
+  // =========================
+  // MODULE 4 — The Psychology of Weight Loss (titles can be refined later)
+  // =========================
+  {
+    slug: "module-4",
+    title: "The Psychology of Weight Loss",
+    lessons: [
+      { n: 1, title: "Lesson 1", video: "https://drive.google.com/file/d/15-K6cUCMehiCXCN0z-Fhncc8NOgCMsmk/preview", docs: [] },
+      { n: 2, title: "Lesson 2", video: "https://drive.google.com/file/d/1EZC70P7628MayYCyi12SSXQ4gkSeQ9T2/preview", docs: [] },
+      { n: 3, title: "Lesson 3", video: "https://drive.google.com/file/d/1GKRVLvo66lbiBEs4JKP3zD6LllHn0OE-/preview", docs: [] },
+      { n: 4, title: "Lesson 4", video: "https://drive.google.com/file/d/1KQ9gdXxEPK6pXV1piVE7M_-F9wp014Tu/preview", docs: [] },
+      { n: 5, title: "Lesson 5", video: "https://drive.google.com/file/d/1KsJLSCyFvNITp5nZgrUFP5IIrcWmmZ3S/preview", docs: [] },
+      { n: 6, title: "Lesson 6", video: "https://drive.google.com/file/d/1TqjoeQVdKZm1Gshuzw25yQImge8uDWoh/preview", docs: [] },
+      { n: 7, title: "Lesson 7", video: "https://drive.google.com/file/d/1d5sPCk1AjXOLKMfJG1GKnjN5QtQl8AkD/preview", docs: [] },
+      { n: 8, title: "Lesson 8", video: "https://drive.google.com/file/d/1oo1GI1v4KZ_ygABi_ojPAmY2Fz83Ev2X/preview", docs: [] },
+      { n: 9, title: "Lesson 9", video: "https://drive.google.com/file/d/1yDTSMZZTtw0F7n1KPoMnauIo4CDmaHk6/preview", docs: [] }
+    ],
+    resources: [
+      { label: "Module 4 Worksheet / Notes", url: "https://docs.google.com/document/d/143URPjJLJ79w2C_mZB8AOXHsWjh0wzUGXbXnLxCR3-U/edit?usp=sharing" }
+    ]
+  }
+];
+
+Implementation rules
+
+Embed videos with:
+
+<iframe src="DRIVE_PREVIEW_URL" allow="autoplay; fullscreen" allowfullscreen></iframe>
+
+
+Docs render as buttons opening in a new tab (target="_blank" rel="noopener").
+
+Progress ticks: show ✅ in sidebar when localStorage['viewed:<slug>:<n>'] === '1'.
+
+Prev/Next: navigate within the current module; from Module-2 overview (n=0), “Next” goes to lesson 1.
+
+SEO: <title>Weight & Fat Loss: 101 — <Module Title> — Lesson <n>: <Lesson Title></title>.
+
+README: include how to update MODULES, convert Drive /view→/preview, change ACCESS_CODE, and add PAY_LINK_ALL.
